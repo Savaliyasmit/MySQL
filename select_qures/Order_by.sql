@@ -1,5 +1,5 @@
 -- orderby menes acceding order and descending order
--- that meenses by defult conver acessding
+-- no have use kkey is  bydefult conver acessding
 -- otherwise use keyword asec
 select * from  client_master order by clientno asc ;
 
