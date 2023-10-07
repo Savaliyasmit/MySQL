@@ -29,7 +29,7 @@ create table CLIENT_MASTER(
 -- select *from client_master;
 
 insert into CLIENT_MASTER(
-    CLIENTN0,
+    CLIENTNo,
     NAME,
     ADDRESS1,
     ADDRESS2,
