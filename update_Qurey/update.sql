@@ -10,7 +10,7 @@
     --c.change the cost price of 'Trousers' to Rs.950
     update product_master set costprice = 950 where descrption = "Trousers";
   
-    --d.change city of the salesman to pune
+    --d.change city of the salesman to pune mens all have change
     update salesman_master set city = "Pune" ;
 
     update product_master set ProfitPercent = 2.5 where productN0 = "p00001";
