@@ -1,0 +1,206 @@
+create table client_master(
+    clientNo varchar(6) not null primary key,
+    name varchar(20) not null,
+    address1 varchar(30),
+    address2 varchar(30),
+    city varchar(15),
+    pincode int(15),
+    state varchar(15),
+    baldue int(15)
+);
+
+
+create table PRODUCT_MASTER(
+    PRODUCTNO varchar(6),
+    DESCRIPTION varchar(15),
+    PROFITPERCENT INT(2),
+    UNITMEASURE varchar(10),
+    QTYONHAND INT(8),
+    RECORDERLVL INT(8),
+    SELLPRICE INT(8),
+    COSTPRICE INT(8),
+
+    primary key(PRODUCTNO)
+);
+
+
+CREATE TABLE SALESMAN_MASTER(
+    SALESMANNO varchar (6) ,
+    SALESMANNAME varchar(20) not null,
+    ADDRESS1 varchar(15) not null,
+    ADDRESS2 varchar(15),
+    CITY VARCHAR (15),
+    PINCODE bigINT(10),
+    STATE VARCHAR(15),
+    SALAMT bigINT(15) not null,
+    TGTTOGET bigINT(15) not null,
+    YTDSALES bigINT(15) not null,
+    REMARKS VARCHAR(20),
+
+    Constraint pk primary key (SALESMANNO)
+) ;
+
+
+create table sales_order(
+    orderNo varchar(6) primary key,
+    clientNO varchar(6) foreign key references client_master(clientNO),
+    orderDate date,
+    delyaddr varchar(30),
+    SALESMANNO varchar(6),
+    delyType varchar(1),
+    BillYN varchar(1),
+    delyDate date,
+    orderStatus varchar(15),
+
+    foreign key (clientNo) references client_master(clientNO), 
+    foreign key (SALESMANNO) references SALESMAN_MASTER(SALESMANNO) 
+);
+
+INSERT INTO sales_order values
+ ("O19001", "C00001", "2004-06-12", "Mumbai","S00001", "F", "N", "2002-07-20", "In Process");
+ 
+INSERT INTO sales_order values
+ ("O19002", "C00002", "2004-06-25", "Mumbai","S00002", "P", "N", "2002-06-27", "Cancelled"),
+ ("O46865", "C00003", "2004-02-18", "Banglore","S00003", "F", "Y", "2002-02-20", "Fulfilled"),
+ ("O19003", "C00001", "2004-04-03", "Pune","S00001", "F", "Y", "2002-04-07", "Fulfilled"),
+ ("O46866", "C00004", "2004-05-20", "Pune","S00002", "P", "N", "2002-05-22", "Cancelled"),
+ ("O19008", "C00005", "2004-05-24", "Banglore","S00004", "F", "N", "2002-07-26", "In Process");
+
+select * from sales_order;
+
+create table sales_order_details(
+    orderNo varchar(6), 
+    PRODUCTNO varchar(6), 
+    qtyOrdered int(8),
+    qtyDisp int (8),
+    productRate int(10),
+
+    foreign key (orderNo) references sales_order(orderNo),
+    foreign key (PRODUCTNO) references PRODUCT_MASTER(PRODUCTNO)
+);
+
+select * from sales_order_details, product_master where sales_order_details.productno = product_master.productno;
+
+INSERT INTO sales_order_details values
+ ("O19001", "P00001", 4, 4 , 525);
+
+INSERT INTO sales_order_details values
+ ("O19001", "P07965", 2, 1, 8400),
+ ("O19001", "P07885", 2, 1, 5250),
+ ("O19002", "P00001",10, 0, 525),
+ ("O46865","P07868",3,3,3150),
+ ("O46865","P07885",3,1,5250),
+ ("O46865","P00001",10,10,525),
+ ("O46865","P0345",4,4,1050),
+ ("O19003","P0345",2,2,1050),
+ ("O19003","P06734",1,1,12000),
+ ("O46866","P07965",1,0,8400),
+ ("O46866","P07975",1,0,1050),
+ ("O19008","P00001",10,5,525),
+ ("O19008","P07975",5,3,1050);
+
+
+-- join query
+select CLIENT_MASTER.name, PRODUCT_MASTER.DESCRIPTION,SALES_ORDER.ORDERNO  from SALES_ORDER_DETAILS 
+inner join SALES_ORDER on SALES_ORDER_DETAILS.ORDERNO = SALES_ORDER.ORDERNO
+inner join CLIENT_MASTER on SALES_ORDER.CLIENTNO = CLIENT_MASTER.CLIENTNO
+inner join PRODUCT_MASTER on SALES_ORDER_DETAILS.wO = PRODUCT_MASTER.PRODUCTNO;
+
++----------------+--------------+---------+
+| name           | DESCRIPTION  | ORDERNO |
++----------------+--------------+---------+
+| Hitesh         | T-SHIRTS     | O19001  |
+| Hitesh         | DENIM SHIRTS | O19001  |
+| Hitesh         | PULL OVERS   | O19001  |
+| Hitesh         | SHIRTS       | O19003  |
+| Hitesh         | COTTON JEANS | O19003  |
+| Mamta Muzmudar | T-SHIRTS     | O19002  |
+| Chhaya Bankar  | TROUSERS     | O46865  |
+| Chhaya Bankar  | PULL OVERS   | O46865  |
+| Chhaya Bankar  | T-SHIRTS     | O46865  |
+| Chhaya Bankar  | SHIRTS       | O46865  |
+| Ashwini joshi  | DENIM SHIRTS | O46866  |
+| Ashwini joshi  | LYCRA TOPS   | O46866  |
+| Deepak Sharma  | T-SHIRTS     | O19008  |
+| Deepak Sharma  | LYCRA TOPS   | O19008  |
++----------------+--------------+---------+
+
+-- inner join
+select CLIENT_MASTER.name from SALES_ORDER
+inner join CLIENT_MASTER on SALES_ORDER.CLIENTNO = CLIENT_MASTER.CLIENTNO;
+
++----------------+
+| name           |
++----------------+
+| Hitesh         |
+| Hitesh         |
+| Mamta Muzmudar |
+| Chhaya Bankar  |
+| Ashwini joshi  |
+| Deepak Sharma  |
++----------------+
+
+-- left join
+select PRODUCT_MASTER.*, SALES_ORDER_DETAILS.ORDERNO from SALES_ORDER_DETAILS
+left outer join product_master on SALES_ORDER_DETAILS.productno = product_master.productno;
+
++-----------+--------------+---------------+-------------+-----------+-------------+-----------+-----------+---------+
+| PRODUCTNO | DESCRIPTION  | PROFITPERCENT | UNITMEASURE | QTYONHAND | RECORDERLVL | SELLPRICE | COSTPRICE | ORDERNO |
++-----------+--------------+---------------+-------------+-----------+-------------+-----------+-----------+---------+
+| P00001    | T-SHIRTS     |             5 | PIECE       |       200 |          50 |       350 |       250 | O19001  |
+| P07965    | DENIM SHIRTS |             4 | PIECE       |       100 |          40 |       350 |       250 | O19001  |
+| P07885    | PULL OVERS   |             3 | PIECE       |        80 |          30 |       700 |       450 | O19001  |
+| P00001    | T-SHIRTS     |             5 | PIECE       |       200 |          50 |       350 |       250 | O19002  |
+| P07868    | TROUSERS     |             2 | PIECE       |       150 |          50 |       850 |       550 | O46865  |
+| P07885    | PULL OVERS   |             3 | PIECE       |        80 |          30 |       700 |       450 | O46865  |
+| P00001    | T-SHIRTS     |             5 | PIECE       |       200 |          50 |       350 |       250 | O46865  |
+| P0345     | SHIRTS       |             6 | PIECE       |       150 |          50 |       500 |       350 | O46865  |
+| P0345     | SHIRTS       |             6 | PIECE       |       150 |          50 |       500 |       350 | O19003  |
+| P06734    | COTTON JEANS |             5 | PIECE       |       100 |          20 |       600 |       450 | O19003  |
+| P07965    | DENIM SHIRTS |             4 | PIECE       |       100 |          40 |       350 |       250 | O46866  |
+| P07975    | LYCRA TOPS   |             5 | PIECE       |        70 |          30 |       300 |       175 | O46866  |
+| P00001    | T-SHIRTS     |             5 | PIECE       |       200 |          50 |       350 |       250 | O19008  |
+| P07975    | LYCRA TOPS   |             5 | PIECE       |        70 |          30 |       300 |       175 | O19008  |
++-----------+--------------+---------------+-------------+-----------+-------------+-----------+-----------+---------+
+
+-- Right join
+select PRODUCT_MASTER.DESCRIPTION, SALES_ORDER_DETAILS.ORDERNO from SALES_ORDER_DETAILS
+Right outer join product_master on SALES_ORDER_DETAILS.productno = product_master.productno;
+
++--------------+---------+
+| DESCRIPTION  | ORDERNO |
++--------------+---------+
+| T-SHIRTS     | O19001  |
+| T-SHIRTS     | O19002  |
+| T-SHIRTS     | O46865  |
+| T-SHIRTS     | O19008  |
+| SHIRTS       | O46865  |
+| SHIRTS       | O19003  |
+| COTTON JEANS | O19003  |
+| JEANS        | NULL    |
+| TROUSERS     | O46865  |
+| PULL OVERS   | O19001  |
+| PULL OVERS   | O46865  |
+| DENIM SHIRTS | O19001  |
+| DENIM SHIRTS | O46866  |
+| LYCRA TOPS   | O46866  |
+| LYCRA TOPS   | O19008  |
+| SKIRTS       | NULL    |
++--------------+---------+
+
+-- Full join
+select CLIENT_MASTER.*, SALES_ORDER.* from SALES_ORDER
+inner join CLIENT_MASTER on SALES_ORDER.CLIENTNO = CLIENT_MASTER.clientno;
+
++----------+----------------+-----------+----------+-----------+---------+-------------+--------+---------+----------+------------+----------+------------+----------+--------+------------+-------------+
+| clientNo | name           | address1  | address2 | city      | pincode | state       | baldue | orderNo | clientNO | orderDate  | delyaddr | SALESMANNO | delyType | BillYN | delyDate   | orderStatus |
++----------+----------------+-----------+----------+-----------+---------+-------------+--------+---------+----------+------------+----------+------------+----------+--------+------------+-------------+
+| C00001   | Hitesh         | Bhavnagar | TaLAJA   | Bhavnagar |  395008 | Gujarat     | 150000 | O19001  | C00001   | 2004-06-12 | Mumbai   | S00001     | F        | N      | 2002-07-20 | In Process  |
+| C00002   | Mamta Muzmudar | A-104     | worli    | Mumbai    |  400002 | Maharashtra |  12000 | O19002  | C00002   | 2004-06-25 | Mumbai   | S00002     | P        | N      | 2002-06-27 | Cancelled   |
+| C00001   | Hitesh         | Bhavnagar | TaLAJA   | Bhavnagar |  395008 | Gujarat     | 150000 | O19003  | C00001   | 2004-04-03 | Pune     | S00001     | F        | Y      | 2002-04-07 | Fulfilled   |
+| C00005   | Deepak Sharma  | D-104     | Kapodra  | Mangalore |  560050 | Karnataka   |      0 | O19008  | C00005   | 2004-05-24 | Banglore | S00004     | F        | N      | 2002-07-26 | In Process  |
+| C00003   | Chhaya Bankar  | B-104     | Nariman  | Mumbai    |  400001 | Maharashtra |  14000 | O46865  | C00003   | 2004-02-18 | Banglore | S00003     | F        | Y      | 2002-02-20 | Fulfilled   |
+| C00004   | Ashwini joshi  | C-104     | Bandra   | Bangalore |  560001 | Karnataka   |   5000 | O46866  | C00004   | 2004-05-20 | Pune     | S00002     | P        | N      | 2002-05-22 | Cancelled   |
++----------+----------------+-----------+----------+-----------+---------+-------------+--------+---------+----------+------------+----------+------------+----------+--------+------------+-------------+
+ 
+
