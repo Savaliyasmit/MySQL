@@ -13,11 +13,9 @@ inner join client_master on sales_order.CLIENTN0 =  client_master.CLIENTN0
  inner join  product_master on sales_order_details.productNo = product_master.productNo where delydate = "2002-06-27" ;
  
 --c.list the productno and description of constantly sold (i.e. rapidly moving);
-select product_master.productNo , product_master.description , product_master.QtyOnHand
+select  distinct product_master.productno,description  
 from sales_order_details 
-inner join sales_order  on sales_order_details.ORDERN0 = sales_order.ORDERN0 
-inner join client_master on sales_order.CLIENTN0 =  client_master.CLIENTN0
-inner join  product_master on sales_order_details.productNo = product_master.productNo where QtyOnHand  = 200;
+inner join  product_master on sales_order_details.productNo = product_master.productNo ;
 
 --d.find the names of clients who have purchased trousers
 select client_master.name , product_master.description 
